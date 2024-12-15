@@ -1,4 +1,4 @@
-interface HomeService {
+export interface HomeService {
     id: number,
     slug: string,
     name: string,
@@ -24,17 +24,17 @@ interface Testimonial {
     photo: string,
 }
 
-interface Category {
+export interface Category {
     id: number,
     name: string,
     slug: string,
     photo: string,
-    homeServices_count: number,
+    home_services_count: number,
     home_services: HomeService[],
     popular_services: HomeService[],
 }
 
-interface BookingDetails {
+export interface BookingDetails {
     id: number,
     name: string,
     phone: string,
@@ -59,13 +59,13 @@ interface TransactionDetails {
     hone_service: HomeService,
 }
 
-interface CartItem { 
+export interface CartItem { 
     service_id: number,
     slug: string,
     quantity: number,
 }
 
-type BookingFormData = {
+export type BookingFormData = {
     name: string,
     email: string, 
     phone: string,
