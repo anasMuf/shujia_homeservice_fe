@@ -3,6 +3,8 @@ import { Category, HomeService }            from "../types/type";
 import { useEffect, useState }              from "react";
 import apiClient                            from "../services/apiServices";
 import { Link }                             from "react-router-dom";
+import { formatCurrency }                   from "../services/FormatCurrency";
+import { STORAGE_URL } from "../services/storageServices";
 
 const fetchCategories = async () => {
     const response = await apiClient.get("/categories");
@@ -46,14 +48,6 @@ export default function HomePage(){
         fetchServicesData();
     }, []);
 
-    const formatCurrency = (value: number) => {
-        return new Intl.NumberFormat("id-ID", {
-            style: "currency", 
-            currency: "IDR",
-            maximumFractionDigits: 0,
-        }).format (value);
-    }
-
     if (loadingCategories && loadingServices) {
         return <p>Loading categories and services...</p>;
     }
@@ -62,7 +56,7 @@ export default function HomePage(){
         return <p>Error loading data: {error}</p>;
     }
 
-    const STORAGE_URL = import.meta.env.VITE_REACT_API_STORAGE_URL;
+    
 
     return(
         <main className="relative mx-auto w-full max-w-[640px] overflow-hidden bg-white pb-[142px]">

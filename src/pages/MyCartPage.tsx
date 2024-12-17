@@ -3,6 +3,8 @@ import { Link }                             from "react-router-dom";
 import { CartItem, HomeService }            from "../types/type";
 import apiClient                            from "../services/apiServices";
 import AccordionSection                     from "../components/AccordionSection";
+import { formatCurrency }                   from "../services/FormatCurrency";
+import { STORAGE_URL } from "../services/storageServices";
 
 export default function MyCartPage(){
     const [serviceDetails, setServiceDetails] = useState<HomeService[]>([]);
@@ -86,14 +88,6 @@ export default function MyCartPage(){
     const tax = subtotal * 0.11;
     const total = subtotal + tax;
 
-    const formatCurrency = (value: number) => {
-        return new Intl.NumberFormat("id-ID", {
-            style: "currency", 
-            currency: "IDR",
-            maximumFractionDigits: 0,
-        }).format (value);
-    }
-
     if (loading) {
         return <p>Loading categories and services...</p>;
     }
@@ -101,8 +95,6 @@ export default function MyCartPage(){
     if (error) {
         return <p>Error loading data: {error}</p>;
     }
-
-    const STORAGE_URL = import.meta.env.VITE_REACT_API_STORAGE_URL;
 
     return(
         <main className="relative mx-auto min-h-screen w-full max-w-[640px] bg-[#F4F5F7] pb-[158px]">

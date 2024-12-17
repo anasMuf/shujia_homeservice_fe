@@ -3,6 +3,8 @@ import { useState, useEffect }            from "react";
 import { Category }                       from "../types/type";
 import apiClient                          from "../services/apiServices";
 import { Swiper, SwiperSlide }            from "swiper/react";
+import { formatCurrency }                 from "../services/FormatCurrency";
+import { STORAGE_URL } from "../services/storageServices";
 
 export default function CategoryPage(){
     const { slug } = useParams<{ slug: string }>();
@@ -49,15 +51,7 @@ export default function CategoryPage(){
         return <p>service not found</p>;
     }
 
-    const formatCurrency = (value: number) => {
-        return new Intl.NumberFormat("id-ID", {
-            style: "currency", 
-            currency: "IDR",
-            maximumFractionDigits: 0,
-        }).format (value);
-    }
-
-    const STORAGE_URL = import.meta.env.VITE_REACT_API_STORAGE_URL;
+    
 
     return(
         <main className="relative mx-auto flex w-full max-w-[640px] flex-col gap-[30px] overflow-x-hidden bg-white pb-[112px]">

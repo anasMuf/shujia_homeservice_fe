@@ -3,6 +3,8 @@ import { Link, useParams }                                    from "react-router
 import { CartItem, HomeService }                              from "../types/type";
 import apiClient                                              from "../services/apiServices";
 import { Swiper,SwiperSlide }                                 from "swiper/react";
+import { formatCurrency }                                     from "../services/FormatCurrency";
+import { STORAGE_URL } from "../services/storageServices";
 
 export default function DetailsPage(){
     const { slug } = useParams<{ slug: string }>();
@@ -70,14 +72,6 @@ export default function DetailsPage(){
         }
     }
 
-    const formatCurrency = (value: number) => {
-        return new Intl.NumberFormat("id-ID", {
-            style: "currency", 
-            currency: "IDR",
-            maximumFractionDigits: 0,
-        }).format (value);
-    }
-
     if (loading) {
         return <p>Loading categories and services...</p>;
     }
@@ -90,7 +84,7 @@ export default function DetailsPage(){
         return <p>service not found</p>;
     }
 
-    const STORAGE_URL = import.meta.env.VITE_REACT_API_STORAGE_URL;
+    
 
     return(
         <main className="relative mx-auto w-full max-w-[640px] overflow-x-hidden bg-white pb-[144px]">
