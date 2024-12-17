@@ -1,4 +1,98 @@
+import React, { useEffect, useState }              from "react";
+import { Link, useNavigate }                       from "react-router-dom";
+import AccordionSection                            from "../components/AccordionSection";
+import { BookingFormData }                         from "../types/type";
+import { z }                                       from "zod";
+import { bookingSchema }                           from "../types/validationBooking";
+
 export default function BookingPage(){
+
+    const [formData, setFormData] = useState<BookingFormData>({
+        name: "",
+        email: "", 
+        phone: "",
+        started_time: "",
+        schedule_at: "",
+        post_code: "",
+        address: "",
+        city: "",
+    });
+
+    const [formErrors, setFormErrors] = useState<z.ZodIssue[]>([]);
+
+    const navigate = useNavigate();
+
+    const [isScrolled, setIsScroll] = useState(false)
+
+    useEffect(() => {
+        const savedData = localStorage.getItem("bookingData");
+        const cartData = localStorage.getItem("cart");
+        if(!cartData || JSON.parse(cartData).length === 0){
+            navigate('/')
+            return;
+        }
+        if(savedData){
+            setFormData(JSON.parse(savedData));
+        }
+    }, [navigate]);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setIsScroll(window.scrollY > 0);
+        };
+        window.addEventListener("scroll", handleScroll);
+
+        return () => {
+            window.removeEventListener("scroll", handleScroll);
+        }
+    }, []);
+
+    useEffect(() => {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        // YYYY-MM-DDTHH:MM:SS.sssZ
+        const formattedDate = tomorrow.toISOString().split("T")[0]; // Format as YYYY-MM-DD
+
+        setFormData((prev) => ({
+            ...prev,
+            schedule_at: formattedDate,
+        }));
+    }, []);
+
+    const cities = [
+        'Surabaya',
+        'Mojokerto',
+        'Jombnag',
+        'Lamongan',
+        'Pasuruan',
+        'Malang',
+    ];
+
+    const handleCange = (
+        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    ) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+
+        const validation = bookingSchema.safeParse(formData);
+
+        if (!validation.success) {
+            setFormErrors(validation.error. issues);
+            return;
+        }
+        localStorage. setItem("bookingData", JSON.stringify(formData));
+        alert("Booking information saved!");
+        navigate("/payment");
+        setFormErrors([]);
+    };
+
     return(
         <main className="relative min-h-screen mx-auto w-full max-w-[640px] bg-[#F4F5F7]">
             <div id="Background" className="absolute left-0 right-0 top-0">
@@ -10,21 +104,28 @@ export default function BookingPage(){
             </div>
             <section
                 id="NavTop"
-                className="fixed left-0 right-0 top-[16px] z-30 transition-all duration-300"
+                className={`fixed left-0 right-0 z-30 transition-all duration-300
+                    ${isScrolled ? 'top-[30px]' : 'top-[16px]'}    
+                `}
             >
                 <div className="relative mx-auto max-w-[640px] px-5">
                     <div
                         id="ContainerNav"
-                        className="relative flex h-[68px] items-center justify-center transition-all duration-300"
+                        className={`relative flex h-[68px] items-center justify-center transition-all duration-300
+                            ${isScrolled ? 'bg-white rounded-[22px] px-[16px] shadow-[0px_12px_20px_0px_#0305041C]' : ''}
+                        `}
                     >
-                        <a
+                        <Link to={`/cart`}
                             id="BackA"
-                            href="my-cart.html"
-                            className="absolute left-0 transition-all duration-300"
+                            className={`absolute transition-all duration-300
+                                ${isScrolled ? 'left-[16px]' : 'left-0'}    
+                            `}
                         >
                             <div
                                 id="Back"
-                                className="flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-full bg-white"
+                                className={`flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-full bg-white
+                                    ${isScrolled ? 'border border-shujia-graylight' : ''}    
+                                `}
                             >
                                 <img
                                     src="/assets/images/icons/back.svg"
@@ -32,10 +133,12 @@ export default function BookingPage(){
                                     className="h-[22px] w-[22px] shrink-0"
                                 />
                             </div>
-                        </a>
+                        </Link>
                         <h2
                             id="Title"
-                            className="font-semibold text-white transition-all duration-300"
+                            className={`font-semibold transition-all duration-300
+                                ${isScrolled ? '' : 'text-white'}    
+                            `}
                         >
                             Booking Services
                         </h2>
@@ -88,213 +191,284 @@ export default function BookingPage(){
                 </div>
             </section>
             <div className="relative mt-[44px] flex flex-col px-5 pb-5">
-                <form action="payment.html">
+                <form onSubmit={handleSubmit}>
                     <header className="flex flex-col gap-[2px]">
                         <h1 className="text-[26px] font-extrabold leading-[39px] text-white">
                             Start Booking
                         </h1>
-                        <p className="text-white">Lorem dolor si amet data asli</p>
+                        {/* <p className="text-white">Lorem dolor si amet data asli</p> */}
                     </header>
                     <div className="mt-[20px] flex flex-col gap-5">
-                        <section
-                            id="WorkingSchedule"
-                            className="flex flex-col gap-4 rounded-3xl border border-shujia-graylight bg-white px-[14px] py-[14px]"
+                        <AccordionSection
+                            title="Working Schedule"
+                            iconSrc="/assets/images/icons/bottom-booking-form.svg"
                         >
-                            <div className="flex items-center justify-between">
-                                <h3 className="font-semibold">Working Schedule</h3>
-                                <button type="button" data-expand="WorkingScheduleJ">
+                            <label className="flex flex-col gap-2">
+                                <h4 className="font-semibold">Date</h4>
+                                {formErrors.find((error) =>
+                                    error.path.includes("schedule_at")
+                                ) && (
+                                    <p className="text-red-500">
+                                        {
+                                            formErrors.find((error) => 
+                                                error.path.includes("schedule_at")
+                                            )?.message
+                                        }
+                                    </p>
+                                )}
+                                <div className="relative h-[52px] w-full overflow-hidden rounded-full border border-shujia-graylight">
                                     <img
-                                        src="/assets/images/icons/bottom-booking-form.svg"
+                                        src="/assets/images/icons/date-booking-form.svg"
                                         alt="icon"
-                                        className="h-[32px] w-[32px] shrink-0 transition-all duration-300"
+                                        className="absolute left-[14px] top-1/2 h-6 w-6 shrink-0 -translate-y-1/2"
                                     />
-                                </button>
-                            </div>
-                            <div id="WorkingScheduleJ" className="flex flex-col gap-4">
-                                <label className="flex flex-col gap-2">
-                                    <h4 className="font-semibold">Date</h4>
-                                    <div className="relative h-[52px] w-full overflow-hidden rounded-full border border-shujia-graylight">
-                                        <img
-                                            src="/assets/images/icons/date-booking-form.svg"
-                                            alt="icon"
-                                            className="absolute left-[14px] top-1/2 h-6 w-6 shrink-0 -translate-y-1/2"
-                                        />
-                                        <input
-                                            required=""
-                                            className="h-full w-full rounded-full bg-[#F4F5F7] pl-[50px] font-semibold focus:outline-none"
-                                            readOnly=""
-                                            type="text"
-                                            defaultValue="17 October 2024"
-                                        />
-                                    </div>
-                                </label>
-                                <label className="flex flex-col gap-2">
-                                    <h4 className="font-semibold">Start Time At</h4>
-                                    <div className="relative h-[52px] w-full overflow-hidden rounded-full border border-shujia-graylight transition-all duration-300 focus-within:border-shujia-orange">
-                                        <img
-                                            src="/assets/images/icons/clock-booking-form.svg"
-                                            alt="icon"
-                                            className="absolute left-[14px] top-1/2 h-6 w-6 shrink-0 -translate-y-1/2"
-                                        />
-                                        <select
-                                            name=""
-                                            id=""
-                                            className="h-full w-full appearance-none rounded-full bg-transparent relative z-10 pl-[50px] font-semibold focus:outline-none"
-                                        >
-                                            <option value="" disabled="" selected="">
-                                                Enter the time
-                                            </option>
-                                            <option value="09:00">09:00</option>
-                                            <option value="10:00">10:00</option>
-                                            <option value="11:00">11:00</option>
-                                        </select>
-                                    </div>
-                                </label>
-                            </div>
-                        </section>
-                        <section
-                            id="PersonalInformations"
-                            className="flex flex-col gap-4 rounded-3xl border border-shujia-graylight bg-white px-[14px] py-[14px]"
+                                    <input
+                                        required
+                                        value={formData.schedule_at}
+                                        onChange={handleCange}
+                                        name="schedule_at"
+                                        className="h-full w-full rounded-full bg-[#F4F5F7] pl-[50px] font-semibold focus:outline-none"
+                                        readOnly
+                                        type="text"
+                                    />
+                                </div>
+                            </label>
+                            <label className="flex flex-col gap-2">
+                                <h4 className="font-semibold">Start Time At</h4>
+                                {formErrors.find((error) =>
+                                    error.path.includes("started_time")
+                                ) && (
+                                    <p className="text-red-500">
+                                        {
+                                            formErrors.find((error) => 
+                                                error.path.includes("started_time")
+                                            )?.message
+                                        }
+                                    </p>
+                                )}
+                                <div className="relative h-[52px] w-full overflow-hidden rounded-full border border-shujia-graylight transition-all duration-300 focus-within:border-shujia-orange">
+                                    <img
+                                        src="/assets/images/icons/clock-booking-form.svg"
+                                        alt="icon"
+                                        className="absolute left-[14px] top-1/2 h-6 w-6 shrink-0 -translate-y-1/2"
+                                    />
+                                    <select
+                                        value={formData.started_time}
+                                        onChange={handleCange}
+                                        name="started_time"
+                                        id=""
+                                        className="h-full w-full appearance-none rounded-full bg-transparent relative z-10 pl-[50px] font-semibold focus:outline-none"
+                                    >
+                                        <option value="" disabled>
+                                            Enter the time
+                                        </option>
+                                        <option value="09:00">09:00</option>
+                                        <option value="10:00">10:00</option>
+                                        <option value="11:00">11:00</option>
+                                    </select>
+                                </div>
+                            </label>
+                        </AccordionSection>
+                        <AccordionSection
+                            title="Personal Informations"
+                            iconSrc="/assets/images/icons/bottom-booking-form.svg"
                         >
-                            <div className="flex items-center justify-between">
-                                <h3 className="font-semibold">Personal Informations</h3>
-                                <button type="button" data-expand="PersonalInformationsJ">
+                            <label className="flex flex-col gap-2">
+                                <h4 className="font-semibold">Full Name</h4>
+                                {formErrors.find((error) =>
+                                    error.path.includes("name")
+                                ) && (
+                                    <p className="text-red-500">
+                                        {
+                                            formErrors.find((error) => 
+                                                error.path.includes("name")
+                                            )?.message
+                                        }
+                                    </p>
+                                )}
+                                <div className="relative h-[52px] w-full overflow-hidden rounded-full border border-shujia-graylight transition-all duration-300 focus-within:border-shujia-orange">
                                     <img
-                                        src="/assets/images/icons/bottom-booking-form.svg"
+                                        src="/assets/images/icons/profil-booking-form.svg"
                                         alt="icon"
-                                        className="h-[32px] w-[32px] shrink-0 transition-all duration-300"
+                                        className="absolute left-[14px] top-1/2 h-6 w-6 shrink-0 -translate-y-1/2"
                                     />
-                                </button>
-                            </div>
-                            <div className="flex flex-col gap-4" id="PersonalInformationsJ">
-                                <label className="flex flex-col gap-2">
-                                    <h4 className="font-semibold">Full Name</h4>
-                                    <div className="relative h-[52px] w-full overflow-hidden rounded-full border border-shujia-graylight transition-all duration-300 focus-within:border-shujia-orange">
-                                        <img
-                                            src="/assets/images/icons/profil-booking-form.svg"
-                                            alt="icon"
-                                            className="absolute left-[14px] top-1/2 h-6 w-6 shrink-0 -translate-y-1/2"
-                                        />
-                                        <input
-                                            required=""
-                                            className="h-full w-full rounded-full pl-[50px] font-semibold leading-6 placeholder:text-[16px] placeholder:font-normal placeholder:text-shujia-gray focus:outline-none"
-                                            placeholder="Write your complete name"
-                                            type="text"
-                                        />
-                                    </div>
-                                </label>
-                                <label className="flex flex-col gap-2">
-                                    <h4 className="font-semibold">Email Address</h4>
-                                    <div className="relative h-[52px] w-full overflow-hidden rounded-full border border-shujia-graylight transition-all duration-300 focus-within:border-shujia-orange">
-                                        <img
-                                            src="/assets/images/icons/amplop-booking-form.svg"
-                                            alt="icon"
-                                            className="absolute left-[14px] top-1/2 h-6 w-6 shrink-0 -translate-y-1/2"
-                                        />
-                                        <input
-                                            required=""
-                                            className="h-full w-full rounded-full pl-[50px] font-semibold leading-6 placeholder:text-[16px] placeholder:font-normal placeholder:text-shujia-gray focus:outline-none"
-                                            placeholder="Write your email"
-                                            type="email"
-                                        />
-                                    </div>
-                                </label>
-                                <label className="flex flex-col gap-2">
-                                    <h4 className="font-semibold">No. Phone</h4>
-                                    <div className="relative h-[52px] w-full overflow-hidden rounded-full border border-shujia-graylight transition-all duration-300 focus-within:border-shujia-orange">
-                                        <img
-                                            src="/assets/images/icons/telepon-booking-form.svg"
-                                            alt="icon"
-                                            className="absolute left-[14px] top-1/2 h-6 w-6 shrink-0 -translate-y-1/2"
-                                        />
-                                        <input
-                                            type="tel"
-                                            required=""
-                                            className="h-full w-full rounded-full pl-[50px] font-semibold leading-6 placeholder:text-[16px] placeholder:font-normal placeholder:text-shujia-gray focus:outline-none"
-                                            placeholder="Write your active number"
-                                        />
-                                    </div>
-                                </label>
-                            </div>
-                        </section>
-                        <section
-                            id="YourHomeAddress"
-                            className="flex flex-col gap-4 rounded-3xl border border-shujia-graylight bg-white px-[14px] py-[14px]"
+                                    <input
+                                        required
+                                        value={formData.name}
+                                        onChange={handleCange}
+                                        name="name"
+                                        className="h-full w-full rounded-full pl-[50px] font-semibold leading-6 placeholder:text-[16px] placeholder:font-normal placeholder:text-shujia-gray focus:outline-none"
+                                        placeholder="Write your complete name"
+                                        type="text"
+                                    />
+                                </div>
+                            </label>
+                            <label className="flex flex-col gap-2">
+                                <h4 className="font-semibold">Email Address</h4>
+                                {formErrors.find((error) =>
+                                    error.path.includes("email")
+                                ) && (
+                                    <p className="text-red-500">
+                                        {
+                                            formErrors.find((error) => 
+                                                error.path.includes("email")
+                                            )?.message
+                                        }
+                                    </p>
+                                )}
+                                <div className="relative h-[52px] w-full overflow-hidden rounded-full border border-shujia-graylight transition-all duration-300 focus-within:border-shujia-orange">
+                                    <img
+                                        src="/assets/images/icons/amplop-booking-form.svg"
+                                        alt="icon"
+                                        className="absolute left-[14px] top-1/2 h-6 w-6 shrink-0 -translate-y-1/2"
+                                    />
+                                    <input
+                                        required
+                                        value={formData.email}
+                                        onChange={handleCange}
+                                        name="email"
+                                        className="h-full w-full rounded-full pl-[50px] font-semibold leading-6 placeholder:text-[16px] placeholder:font-normal placeholder:text-shujia-gray focus:outline-none"
+                                        placeholder="Write your email"
+                                        type="email"
+                                    />
+                                </div>
+                            </label>
+                            <label className="flex flex-col gap-2">
+                                <h4 className="font-semibold">No. Phone</h4>
+                                {formErrors.find((error) =>
+                                    error.path.includes("phone")
+                                ) && (
+                                    <p className="text-red-500">
+                                        {
+                                            formErrors.find((error) => 
+                                                error.path.includes("phone")
+                                            )?.message
+                                        }
+                                    </p>
+                                )}
+                                <div className="relative h-[52px] w-full overflow-hidden rounded-full border border-shujia-graylight transition-all duration-300 focus-within:border-shujia-orange">
+                                    <img
+                                        src="/assets/images/icons/telepon-booking-form.svg"
+                                        alt="icon"
+                                        className="absolute left-[14px] top-1/2 h-6 w-6 shrink-0 -translate-y-1/2"
+                                    />
+                                    <input
+                                        type="tel"
+                                        required
+                                        value={formData.phone}
+                                        onChange={handleCange}
+                                        name="phone"
+                                        className="h-full w-full rounded-full pl-[50px] font-semibold leading-6 placeholder:text-[16px] placeholder:font-normal placeholder:text-shujia-gray focus:outline-none"
+                                        placeholder="Write your active number"
+                                    />
+                                </div>
+                            </label>
+                        </AccordionSection>
+                        <AccordionSection
+                            title="Your Home Address"
+                            iconSrc="/assets/images/icons/bottom-booking-form.svg"
                         >
-                            <div className="flex items-center justify-between">
-                                <h3 className="font-semibold">Your Home Address</h3>
-                                <button type="button" data-expand="YourHomeAddressJ">
-                                    <img
-                                        src="/assets/images/icons/bottom-booking-form.svg"
-                                        alt="icon"
-                                        className="h-[32px] w-[32px] shrink-0 transition-all duration-300"
+                            <label className="flex flex-col gap-2">
+                                <h4 className="font-semibold">Address</h4>
+                                {formErrors.find((error) =>
+                                    error.path.includes("address")
+                                ) && (
+                                    <p className="text-red-500">
+                                        {
+                                            formErrors.find((error) => 
+                                                error.path.includes("address")
+                                            )?.message
+                                        }
+                                    </p>
+                                )}
+                                <div className="relative h-[110px] w-full overflow-hidden rounded-[22px] border border-shujia-graylight transition-all duration-300 focus-within:border-shujia-orange">
+                                    <textarea
+                                        placeholder="Enter your complete address"
+                                        required
+                                        value={formData.address}
+                                        onChange={handleCange}
+                                        name="address"
+                                        className="h-full w-full pl-[50px] pr-[14px] pt-[14px] font-semibold leading-7 placeholder:text-[16px] placeholder:font-normal placeholder:text-shujia-gray focus:outline-none"
+                                        id=""
                                     />
-                                </button>
-                            </div>
-                            <div id="YourHomeAddressJ" className="flex flex-col gap-4">
-                                <label className="flex flex-col gap-2">
-                                    <h4 className="font-semibold">Address</h4>
-                                    <div className="relative h-[110px] w-full overflow-hidden rounded-[22px] border border-shujia-graylight transition-all duration-300 focus-within:border-shujia-orange">
-                                        <textarea
-                                            placeholder="Enter your complete address"
-                                            required=""
-                                            className="h-full w-full pl-[50px] pr-[14px] pt-[14px] font-semibold leading-7 placeholder:text-[16px] placeholder:font-normal placeholder:text-shujia-gray focus:outline-none"
-                                            name=""
-                                            id=""
-                                            defaultValue={""}
-                                        />
-                                        <img
-                                            src="/assets/images/icons/school-booking-form.svg"
-                                            alt="icon"
-                                            className="absolute left-[14px] top-[14px] h-6 w-6 shrink-0"
-                                        />
-                                    </div>
-                                </label>
-                                <label className="flex flex-col gap-2">
-                                    <h4 className="font-semibold">City</h4>
-                                    <div className="relative h-[52px] w-full overflow-hidden rounded-full border border-shujia-graylight transition-all duration-300 focus-within:border-shujia-orange">
-                                        <img
-                                            src="/assets/images/icons/location-booking-form.svg"
-                                            alt="icon"
-                                            className="absolute left-[14px] top-1/2 h-6 w-6 shrink-0 -translate-y-1/2"
-                                        />
-                                        <select
-                                            name=""
-                                            id=""
-                                            className="h-full w-full appearance-none rounded-full bg-transparent relative z-10 pl-[50px] font-semibold focus:outline-none"
-                                        >
-                                            <option value="" disabled="" selected="">
-                                                Enter the city name
-                                            </option>
-                                            <option value="Buitenzorg">Buitenzorg</option>
-                                            <option value="Surabaya">Surabaya</option>
-                                            <option value="Jakarta">Jakarta</option>
-                                        </select>
-                                        <img
-                                            src="/assets/images/icons/bottom-select.svg"
-                                            alt="icon"
-                                            className="absolute right-[14px] top-1/2 h-6 w-6 shrink-0 -translate-y-1/2"
-                                        />
-                                    </div>
-                                </label>
-                                <label className="flex flex-col gap-2">
-                                    <h4 className="font-semibold">Post Code</h4>
-                                    <div className="relative h-[52px] w-full overflow-hidden rounded-full border border-shujia-graylight transition-all duration-300 focus-within:border-shujia-orange">
-                                        <img
-                                            src="/assets/images/icons/ball-booking-form.svg"
-                                            alt="icon"
-                                            className="absolute left-[14px] top-1/2 h-6 w-6 shrink-0 -translate-y-1/2"
-                                        />
-                                        <input
-                                            required=""
-                                            className="post-code h-full w-full rounded-full pl-[50px] font-semibold leading-6 placeholder:text-[16px] placeholder:font-normal placeholder:text-shujia-gray focus:outline-none"
-                                            placeholder="What’s your postal code"
-                                            type="tel"
-                                        />
-                                    </div>
-                                </label>
-                            </div>
-                        </section>
+                                    <img
+                                        src="/assets/images/icons/school-booking-form.svg"
+                                        alt="icon"
+                                        className="absolute left-[14px] top-[14px] h-6 w-6 shrink-0"
+                                    />
+                                </div>
+                            </label>
+                            <label className="flex flex-col gap-2">
+                                <h4 className="font-semibold">City</h4>
+                                {formErrors.find((error) =>
+                                    error.path.includes("city")
+                                ) && (
+                                    <p className="text-red-500">
+                                        {
+                                            formErrors.find((error) => 
+                                                error.path.includes("city")
+                                            )?.message
+                                        }
+                                    </p>
+                                )}
+                                <div className="relative h-[52px] w-full overflow-hidden rounded-full border border-shujia-graylight transition-all duration-300 focus-within:border-shujia-orange">
+                                    <img
+                                        src="/assets/images/icons/location-booking-form.svg"
+                                        alt="icon"
+                                        className="absolute left-[14px] top-1/2 h-6 w-6 shrink-0 -translate-y-1/2"
+                                    />
+                                    <select
+                                        value={formData.city}
+                                        onChange={handleCange}
+                                        name="city"
+                                        id=""
+                                        className="h-full w-full appearance-none rounded-full bg-transparent relative z-10 pl-[50px] font-semibold focus:outline-none"
+                                    >
+                                        <option value="" disabled>
+                                            Enter the city name
+                                        </option>
+                                        {cities.map((city) => (
+                                            <option key={city} value={city}>{city}</option>
+                                        ))}
+                                    </select>
+                                    <img
+                                        src="/assets/images/icons/bottom-select.svg"
+                                        alt="icon"
+                                        className="absolute right-[14px] top-1/2 h-6 w-6 shrink-0 -translate-y-1/2"
+                                    />
+                                </div>
+                            </label>
+                            <label className="flex flex-col gap-2">
+                                <h4 className="font-semibold">Post Code</h4>
+                                {formErrors.find((error) =>
+                                    error.path.includes("post_code")
+                                ) && (
+                                    <p className="text-red-500">
+                                        {
+                                            formErrors.find((error) => 
+                                                error.path.includes("post_code")
+                                            )?.message
+                                        }
+                                    </p>
+                                )}
+                                <div className="relative h-[52px] w-full overflow-hidden rounded-full border border-shujia-graylight transition-all duration-300 focus-within:border-shujia-orange">
+                                    <img
+                                        src="/assets/images/icons/ball-booking-form.svg"
+                                        alt="icon"
+                                        className="absolute left-[14px] top-1/2 h-6 w-6 shrink-0 -translate-y-1/2"
+                                    />
+                                    <input
+                                        required
+                                        value={formData.post_code}
+                                        onChange={handleCange}
+                                        name="post_code"
+                                        className="post-code h-full w-full rounded-full pl-[50px] font-semibold leading-6 placeholder:text-[16px] placeholder:font-normal placeholder:text-shujia-gray focus:outline-none"
+                                        placeholder="What’s your postal code"
+                                        type="tel"
+                                    />
+                                </div>
+                            </label>
+                        </AccordionSection>
                     </div>
                     <button
                         type="submit"

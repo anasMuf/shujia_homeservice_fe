@@ -2,7 +2,8 @@ import { z } from "zod";
 
 export const bookingSchema = z.object({
     name: z.string().min(1, "Name is required"),
-    email: z.string().email("Invalid email"),
+    email: z.string().min(1, "email is required"),
+    // email: z.string().email("Invalid email"),
     phone: z.string().min(1, "Phone number is required"),
     started_time: z.string().min(1, "Start time is required"),
     schedule_at: z.string().min(1, "Schedule date is required"),
@@ -19,6 +20,6 @@ export const paymentSchema = z.object ({
 
 export const viewBookingSchema = z.object({
     booking_trx_id: z.string().min(1, "Booking TRX is required"),
-    email: z.string().min(1, "email number is required"),
+    email: z.string().min(1, "email is required"),
     // email: z.string().email("Invalid Email"),
 });
