@@ -145,10 +145,10 @@ export default function CategoryPage(){
                         slidesOffsetAfter={20}
                         slidesOffsetBefore={20}
                     >
-                        {category?.home_services.length > 0 
-                        ? category?.home_services.map((service) => (
-                            <SwiperSlide key={service.id} className="swiper-slide !w-fit">
-                                <Link to={`service/${service.slug}`} className="card">
+                        {category?.popular_services.length > 0 
+                        ? category?.popular_services.map((popular_service) => (
+                            <SwiperSlide key={popular_service.id} className="swiper-slide !w-fit">
+                                <Link to={`/service/${popular_service.slug}`} className="card">
                                     <div className="relative flex w-[230px] shrink-0 flex-col gap-[12px] overflow-hidden rounded-[24px] border border-shujia-graylight bg-white p-4 transition-all duration-300 hover:border-shujia-orange">
                                         <span className="absolute right-[26px] top-[26px] shrink-0 rounded-full bg-white px-2 py-[7px]">
                                             <div className="flex items-center gap-[2px]">
@@ -158,13 +158,13 @@ export default function CategoryPage(){
                                         </span>
                                         <div className="flex h-[140px] w-full shrink-0 items-center justify-center overflow-hidden rounded-[16px] bg-[#D9D9D9]">
                                             <img
-                                                src={`${STORAGE_URL}/${service.thumbnail}`}
+                                                src={`${STORAGE_URL}/${popular_service.thumbnail}`}
                                                 alt="image"
                                                 className="h-full w-full object-cover"
                                             />
                                         </div>
                                         <h4 className="line-clamp-2 min-h-[48px] font-semibold">
-                                            {service.name}
+                                            {popular_service.name}
                                         </h4>
                                         <div className="flex flex-col gap-y-3">
                                             <div className="flex items-center gap-2">
@@ -184,11 +184,11 @@ export default function CategoryPage(){
                                                     className="h-5 w-5 shrink-0"
                                                 />
                                                 <p className="text-sm leading-[21px] text-shujia-gray">
-                                                    {service.duration} Hours
+                                                    {popular_service.duration} Hours
                                                 </p>
                                             </div>
                                             <strong className="font-semibold text-shujia-orange">
-                                                {formatCurrency(service.price)}
+                                                {formatCurrency(popular_service.price)}
                                             </strong>
                                             <img
                                                 className="absolute bottom-0 right-0"
@@ -212,7 +212,7 @@ export default function CategoryPage(){
 
                     {category?.home_services.length > 0 
                     ? category?.home_services.map((service) => (
-                        <Link to={`service/${service.slug}`} key={service.id}>
+                        <Link to={`/service/${service.slug}`} key={service.id}>
                             <div className="mx-5 flex gap-3 rounded-[24px] border border-shujia-graylight bg-white p-4 transition-all duration-300 hover:border-shujia-orange">
                                 <div className="flex h-[101px] w-[120px] shrink-0 items-center justify-center overflow-hidden rounded-2xl">
                                     <img

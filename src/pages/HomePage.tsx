@@ -170,7 +170,7 @@ export default function HomePage(){
                         {services.length > 0
                             ? services.map((service) => (
                                 <SwiperSlide key={service.id} className="swiper-slide !w-fit">
-                                    <Link to={`service/${service.slug}`} className="card">
+                                    <Link to={`/service/${service.slug}`} className="card">
                                         <div className="relative flex w-[230px] shrink-0 flex-col gap-[12px] overflow-hidden rounded-[24px] border border-shujia-graylight bg-white p-4 transition-all duration-300 hover:border-shujia-orange">
                                             <span className="absolute right-[26px] top-[26px] shrink-0 rounded-full bg-white px-2 py-[7px]">
                                                 <div className="flex items-center gap-[2px]">
