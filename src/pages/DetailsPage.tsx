@@ -4,7 +4,8 @@ import { CartItem, HomeService }                              from "../types/typ
 import apiClient                                              from "../services/apiServices";
 import { Swiper,SwiperSlide }                                 from "swiper/react";
 import { formatCurrency }                                     from "../services/FormatCurrency";
-import { STORAGE_URL } from "../services/storageServices";
+import { STORAGE_URL }                                        from "../services/storageServices";
+import { usePageScrollHandle }                                from "../services/pageScrollHandle";
 
 export default function DetailsPage(){
     const { slug } = useParams<{ slug: string }>();
@@ -16,21 +17,12 @@ export default function DetailsPage(){
     const [cart, setCart] = useState<CartItem[]>([]);
     const [isAdding, setIsAdding] = useState(false);
 
-    const [isScrolled, setIsScroll] = useState(false)
+    const isScrolled = usePageScrollHandle();
 
     useEffect(() => {
         const savedCart = localStorage.getItem('cart');
         if(savedCart){
             setCart(JSON.parse(savedCart));
-        }
-
-        const handleScroll = () => {
-            setIsScroll(window.scrollY > 0);
-        };
-        window.addEventListener("scroll", handleScroll);
-
-        return () => {
-            window.removeEventListener("scroll", handleScroll);
         }
     }, []);
 
@@ -83,8 +75,6 @@ export default function DetailsPage(){
     if (!service) {
         return <p>service not found</p>;
     }
-
-    
 
     return(
         <main className="relative mx-auto w-full max-w-[640px] overflow-x-hidden bg-white pb-[144px]">

@@ -4,6 +4,7 @@ import AccordionSection                            from "../components/Accordion
 import { BookingFormData }                         from "../types/type";
 import { z }                                       from "zod";
 import { bookingSchema }                           from "../types/validationBooking";
+import { usePageScrollHandle }                     from "../services/pageScrollHandle";
 
 export default function BookingPage(){
 
@@ -22,7 +23,7 @@ export default function BookingPage(){
 
     const navigate = useNavigate();
 
-    const [isScrolled, setIsScroll] = useState(false)
+    const isScrolled = usePageScrollHandle();
 
     useEffect(() => {
         const savedData = localStorage.getItem("bookingData");
@@ -35,17 +36,6 @@ export default function BookingPage(){
             setFormData(JSON.parse(savedData));
         }
     }, [navigate]);
-
-    useEffect(() => {
-        const handleScroll = () => {
-            setIsScroll(window.scrollY > 0);
-        };
-        window.addEventListener("scroll", handleScroll);
-
-        return () => {
-            window.removeEventListener("scroll", handleScroll);
-        }
-    }, []);
 
     useEffect(() => {
         const tomorrow = new Date();

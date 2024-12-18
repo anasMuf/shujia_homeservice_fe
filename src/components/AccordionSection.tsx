@@ -2,11 +2,12 @@ import { useState } from "react";
 
 interface AccordionSectionProps{
     title: string;
-    iconSrc: string;
+    iconSrc?: string;
     children: React.ReactNode;
+    cssParent?: string;
 }
 
-export default function AccordionSection({title, iconSrc, children}: AccordionSectionProps){
+export default function AccordionSection({title, iconSrc="/assets/images/icons/bottom-booking-form.svg", cssParent="flex flex-col gap-4", children}: AccordionSectionProps){
 
     const [isOpen, setIsOpen] = useState(true);
 
@@ -30,7 +31,7 @@ export default function AccordionSection({title, iconSrc, children}: AccordionSe
                     />
                 </button>
             </div>
-            {isOpen && <div className="flex flex-col gap-4">
+            {isOpen && <div className={cssParent}>
                 {children}
             </div>}
         </section>

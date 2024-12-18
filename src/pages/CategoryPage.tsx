@@ -4,7 +4,8 @@ import { Category }                       from "../types/type";
 import apiClient                          from "../services/apiServices";
 import { Swiper, SwiperSlide }            from "swiper/react";
 import { formatCurrency }                 from "../services/FormatCurrency";
-import { STORAGE_URL } from "../services/storageServices";
+import { STORAGE_URL }                    from "../services/storageServices";
+import { usePageScrollHandle }            from "../services/pageScrollHandle";
 
 export default function CategoryPage(){
     const { slug } = useParams<{ slug: string }>();
@@ -13,18 +14,7 @@ export default function CategoryPage(){
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    const [isScrolled, setIsScroll] = useState(false)
-
-    useEffect(() => {
-        const handleScroll = () => {
-            setIsScroll(window.scrollY > 0);
-        };
-        window.addEventListener("scroll", handleScroll);
-
-        return () => {
-            window.removeEventListener("scroll", handleScroll);
-        }
-    }, []);
+    const isScrolled = usePageScrollHandle();
 
     useEffect(() => {
         apiClient
@@ -50,8 +40,6 @@ export default function CategoryPage(){
     if (!category) {
         return <p>service not found</p>;
     }
-
-    
 
     return(
         <main className="relative mx-auto flex w-full max-w-[640px] flex-col gap-[30px] overflow-x-hidden bg-white pb-[112px]">

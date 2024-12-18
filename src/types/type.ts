@@ -44,6 +44,7 @@ export interface BookingDetails {
     post_code: string,
     city: string,
     booking_trx_id: string,
+    proof: string,
     is_paid: boolean,
     sub_total: number,
     total_tax_amount: number,
@@ -57,7 +58,7 @@ interface TransactionDetails {
     id: number,
     price: string,
     home_service_id: number,
-    hone_service: HomeService,
+    home_service: HomeService,
 }
 
 export interface CartItem { 

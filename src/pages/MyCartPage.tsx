@@ -4,7 +4,8 @@ import { CartItem, HomeService }            from "../types/type";
 import apiClient                            from "../services/apiServices";
 import AccordionSection                     from "../components/AccordionSection";
 import { formatCurrency }                   from "../services/FormatCurrency";
-import { STORAGE_URL } from "../services/storageServices";
+import { STORAGE_URL }                      from "../services/storageServices";
+import { usePageScrollHandle }              from "../services/pageScrollHandle";
 
 export default function MyCartPage(){
     const [serviceDetails, setServiceDetails] = useState<HomeService[]>([]);
@@ -12,7 +13,7 @@ export default function MyCartPage(){
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    const [isScrolled, setIsScroll] = useState(false)
+    const isScrolled = usePageScrollHandle();
 
     useEffect(() => {
         const savedCart = localStorage.getItem('cart');
@@ -60,15 +61,6 @@ export default function MyCartPage(){
             fetchServiceDetails();
         }else{
             setLoading(false)
-        }
-
-        const handleScroll = () => {
-            setIsScroll(window.scrollY > 0);
-        };
-        window.addEventListener("scroll", handleScroll);
-
-        return () => {
-            window.removeEventListener("scroll", handleScroll);
         }
     }, []);
 

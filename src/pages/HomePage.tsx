@@ -4,7 +4,7 @@ import { useEffect, useState }              from "react";
 import apiClient                            from "../services/apiServices";
 import { Link }                             from "react-router-dom";
 import { formatCurrency }                   from "../services/FormatCurrency";
-import { STORAGE_URL } from "../services/storageServices";
+import { STORAGE_URL }                      from "../services/storageServices";
 
 const fetchCategories = async () => {
     const response = await apiClient.get("/categories");
@@ -55,8 +55,6 @@ export default function HomePage(){
     if (error) {
         return <p>Error loading data: {error}</p>;
     }
-
-    
 
     return(
         <main className="relative mx-auto w-full max-w-[640px] overflow-hidden bg-white pb-[142px]">
@@ -226,7 +224,7 @@ export default function HomePage(){
                     <div className="rounded-[24px] bg-shujia-black px-[20px] py-[14px]">
                         <ul className="flex items-center gap-[20.30px]">
                             <li className="w-full">
-                                <a href="#">
+                                <Link to={'/'}>
                                     <div className="flex items-center justify-center gap-2 rounded-full bg-shujia-orange px-[18px] py-[10px] transition-all duration-300 hover:shadow-[0px_4px_10px_0px_#D04B1E80]">
                                         <img
                                             src="/assets/images/icons/browse.svg"
@@ -237,10 +235,10 @@ export default function HomePage(){
                                             Browse
                                         </p>
                                     </div>
-                                </a>
+                                </Link>
                             </li>
                             <li className="shrink-0">
-                                <a href="#">
+                                <Link to={'/my-booking'}>
                                     <div className="flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-full border border-shujia-graylight transition-all duration-300 hover:border-shujia-orange">
                                         <img
                                             src="/assets/images/icons/note.svg"
@@ -248,7 +246,7 @@ export default function HomePage(){
                                             className="h-[22px] w-[22px] shrink-0"
                                         />
                                     </div>
-                                </a>
+                                </Link>
                             </li>
                             <li className="shrink-0">
                                 <a href="#">

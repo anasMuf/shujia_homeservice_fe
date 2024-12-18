@@ -6,6 +6,7 @@ import { z }                                                          from "zod"
 import { BookingFormData, CartItem, HomeService }                     from "../types/type";
 import apiClient                                                      from "../services/apiServices";
 import { paymentSchema }                                              from "../types/validationBooking";
+import { usePageScrollHandle }                                        from "../services/pageScrollHandle";
 
 type FormData = {
     proof: File | null;
@@ -30,7 +31,7 @@ export default function PaymentPage(){
     const TAX_RATE = 0.11;
     const navigate = useNavigate();
 
-    const [isScrolled, setIsScroll] = useState(false)
+    const isScrolled = usePageScrollHandle();
 
     const fetchServiceDetails = async (cartItems: CartItem[]) => {
         try {
@@ -72,18 +73,6 @@ export default function PaymentPage(){
         fetchServiceDetails(cartItems)
 
     }, [navigate])
-
-    useEffect(() => {
-
-        const handleScroll = () => {
-            setIsScroll(window.scrollY > 0);
-        };
-        window.addEventListener("scroll", handleScroll);
-
-        return () => {
-            window.removeEventListener("scroll", handleScroll);
-        }
-    }, []);
 
     const subtotal = serviceDetails.reduce((acc,service) => acc + service.price, 0);
     const tax = subtotal * TAX_RATE;
@@ -151,6 +140,7 @@ export default function PaymentPage(){
                     console.error("error: booking_trx_id is undefined");
                 }
                 setSuccessMessage("Payment proof uploaded succsessfully!");
+                alert(successMessage)
 
                 localStorage.removeItem("cart");
                 localStorage.removeItem("bookingData");
@@ -443,6 +433,17 @@ export default function PaymentPage(){
                     >
                         <label className="flex flex-col gap-2">
                             <h4 className="font-semibold">Add Proof of Payment</h4>
+                            {formErrors.find((error) =>
+                                error.path.includes("proof")
+                            ) && (
+                                <p className="text-red-500">
+                                    {
+                                        formErrors.find((error) => 
+                                            error.path.includes("proof")
+                                        )?.message
+                                    }
+                                </p>
+                            )}
                             <div className="relative flex h-[52px] w-full items-center overflow-hidden rounded-full border border-shujia-graylight transition-all duration-300 focus-within:border-shujia-orange">
                                 <img
                                     src="/assets/images/icons/proof-payment.svg"
